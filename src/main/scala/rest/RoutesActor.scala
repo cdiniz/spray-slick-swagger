@@ -47,18 +47,7 @@ class RoutesActor(modules: Configuration with PersistenceModule) extends Actor w
   }
 
 
-  def receive = runRoute( path("supplier"){
-    // TODO: post with swagger
-    post {
-      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDAA ? Save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
-
-        // ignoring the number of insertedEntities because in this case it should always be one, you might check this in other cases
-        case Success(insertedEntities) => complete(StatusCodes.Created)
-        case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
-      }
-      }
-    }
-  } ~ suppliers.SupplierGetRoute ~ swaggerService.routes ~
+  def receive = runRoute( suppliers.SupplierPostRoute ~ suppliers.SupplierGetRoute ~ swaggerService.routes ~
     get {
       pathPrefix("") { pathEndOrSingleSlash {
         getFromResource("swagger-ui/index.html")
@@ -80,7 +69,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
 
   @ApiOperation(httpMethod = "GET", response = classOf[Supplier], value = "Returns a supplier based on ID")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "supplierId", required = true, dataType = "integer", paramType = "path", value = "ID of pet that needs to be fetched")
+    new ApiImplicitParam(name = "supplierId", required = true, dataType = "integer", paramType = "path", value = "ID of supplier that needs to be fetched")
   ))
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "Ok")))
@@ -93,5 +82,24 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
         }
       }
     }}
+
+  @ApiOperation(value = "Add Supplier", nickname = "addSuplier", httpMethod = "POST", consumes = "application/json", produces = "text/plain; charset=UTF-8")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "body", value = "Supplier Object", dataType = "persistence.entities.SimpleSupplier", required = true, paramType = "body")
+  ))
+  @ApiResponses(Array(
+    new ApiResponse(code = 400, message = "Bad Request"),
+    new ApiResponse(code = 201, message = "Entity Created")
+  ))
+  def SupplierPostRoute = path("supplier"){
+    post {
+      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDAA ? Save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
+        // ignoring the number of insertedEntities because in this case it should always be one, you might check this in other cases
+        case Success(insertedEntities) => complete(StatusCodes.Created)
+        case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
+      }
+      }
+    }
+  }
 }
 

@@ -1,8 +1,8 @@
 package rest
 
 import entities.JsonProtocol
-import persistence.dal.SuppliersDAA.GetSupplierById
-import persistence.entities.Supplier
+import persistence.dal.SuppliersDAA.{Save, GetSupplierById}
+import persistence.entities.{SimpleSupplier, Supplier}
 import spray.httpx.SprayJsonSupport
 import spray.http._
 import StatusCodes._
@@ -44,6 +44,29 @@ class RoutesSpec  extends AbstractRestTest {
         handled must beTrue
         status mustEqual OK
         responseAs[Seq[Supplier]].length == 2
+      }
+    }
+
+    "create a supplier with the json in post" in {
+      addProbeBehaviour(suppliersActor) {
+        case (sender,  Save(Supplier(None,"name 1","desc 1"))) =>
+          sender.tell(Future(1), suppliersActor.ref)
+      }
+      Post("/supplier",SimpleSupplier("name 1","desc 1")) ~> suppliers.SupplierPostRoute ~> check {
+        handled must beTrue
+        status mustEqual Created
+      }
+    }
+
+    "not handle the invalid json" in {
+      Post("/supplier","{\"name\":\"1\"}") ~> suppliers.SupplierPostRoute ~> check {
+        handled must beFalse
+      }
+    }
+
+    "not handle an empty post" in {
+      Post("/supplier") ~> suppliers.SupplierPostRoute ~> check {
+        handled must beFalse
       }
     }
 

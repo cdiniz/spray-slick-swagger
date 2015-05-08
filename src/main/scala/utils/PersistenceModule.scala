@@ -1,6 +1,6 @@
 package utils
 
-import akka.actor.{Props, ActorRef}
+import akka.actor.{ActorPath, ActorSelection, Props, ActorRef}
 import persistence.dal.{SuppliersDAA}
 import slick.backend.DatabaseConfig
 import slick.driver.{JdbcProfile}
@@ -17,7 +17,7 @@ trait DbModule extends Profile{
 }
 
 trait PersistenceModule {
-	val suppliersDAA: ActorRef
+	val suppliersDAA: ActorSelection
 }
 
 
@@ -31,7 +31,11 @@ trait PersistenceModuleImpl extends PersistenceModule with DbModule{
 	override implicit val profile: JdbcProfile = dbConfig.driver
 	override implicit val db: JdbcProfile#Backend#Database = dbConfig.db
 
-  override val suppliersDAA = system.actorOf(Props(new SuppliersDAA()), "suppliersDAA")
+  system.actorOf(Props(new SuppliersDAA()), "suppliersDAA")
+
+	override val suppliersDAA = system.actorSelection("/user/suppliersDAA")
+
 
 	val self = this
+
 }

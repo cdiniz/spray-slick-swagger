@@ -35,6 +35,5 @@ class SuppliersDAA(implicit val db: JdbcProfile#Backend#Database,implicit val pr
       }  catch {
         case e: Exception => logger.info("Could not create table of suppliers.... assuming it already exists")
       }
-
   }
 }

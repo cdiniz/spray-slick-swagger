@@ -1,6 +1,7 @@
 # SpraySlickSwagger
 The Spray Slick Swagger is a very simple rest api in [Spray](https://github.com/spray/spray) showing one way of using spray with [slick 3](https://github.com/slick/slick) library for database access, and [spray-swagger](https://github.com/gettyimages/spray-swagger) for documentation the routes in spray.
 
+
 It supports the following features:
 
 * Spray-json to parse json
@@ -9,7 +10,8 @@ It supports the following features:
 * Models as case classes and slick models, independent from database driver and profile (Go slick3)
 * Multiple database types configured in properties file (h2 and postgresql for instance)
 * Cake pattern for DI
-* Testing using specs2
+* Routes Tested using specs2
+* Data Access Actor Tested using scalatest
 
 Utils: 
 
@@ -43,7 +45,7 @@ The database pre-configured is an h2, so you just have to:
 
 #TODO
 
-Tests for data access layer and make this project an activator template.
+Make this project an activator template.
 
 #Credits
 

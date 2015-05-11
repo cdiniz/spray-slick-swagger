@@ -9,6 +9,7 @@ It supports the following features:
 * Models as case classes and slick models, independent from database driver and profile (Go slick3)
 * Multiple database types configured in properties file (h2 and postgresql for instance)
 * Cake pattern for DI
+* Testing using specs2
 
 Utils: 
 
@@ -29,11 +30,20 @@ The database pre-configured is an h2, so you just have to:
 
         > run
 
+#Testing
+
+1. Launch SBT:
+
+        $ sbt
+
+2. Compile everything and test:
+
+        > test
+
 
 #TODO
 
-Tests 
-
+Tests for data access layer and make this project an activator template.
 
 #Credits
 

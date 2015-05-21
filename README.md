@@ -24,7 +24,6 @@ The project was thought to be used as an activator template.
 
 The database pre-configured is an h2, so you just have to:
 
-1.
 
         $ sbt run
 
@@ -32,7 +31,6 @@ The database pre-configured is an h2, so you just have to:
 
 To run all tests (routes and persistence tests):
 
-1.
 
         $ sbt test
 

@@ -30,7 +30,9 @@ The database pre-configured is an h2, so you just have to:
 
 #Testing
 
-1. 
+To run all tests (routes and persistence tests):
+
+1.
 
         $ sbt test
 

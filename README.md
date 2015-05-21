@@ -18,34 +18,22 @@ Utils:
 * Typesafe config for property management
 * Typesafe Scala Logging (LazyLogging)
 
-The project was thought to be used as a template for creating spray projects with this features. Soon, I'll make it an activator project.
+The project was thought to be used as an activator template.
 
 #Running
 
 The database pre-configured is an h2, so you just have to:
 
-1. Launch SBT:
+1.
 
-        $ sbt
-
-2. Compile everything and run:
-
-        > run
+        $ sbt run
 
 #Testing
 
-1. Launch SBT:
+1. 
 
-        $ sbt
+        $ sbt test
 
-2. Compile everything and test:
-
-        > test
-
-
-#TODO
-
-Make this project an activator template.
 
 #Credits
 

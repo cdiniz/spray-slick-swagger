@@ -3,7 +3,6 @@ package rest
 import akka.actor.{ Actor}
 import com.wordnik.swagger.annotations._
 import entities.JsonProtocol
-import persistence.dal.SuppliersDAA._
 import persistence.entities._
 import scala.concurrent.Future
 import com.typesafe.scalalogging.LazyLogging
@@ -31,7 +30,7 @@ class RoutesActor(modules: Configuration with PersistenceModule) extends Actor w
   implicit val timeout = Timeout(5.seconds)
 
   // create table for suppliers if the table didn't exist (should be removed, when the database wasn't h2)
-  modules.suppliersDAA ? CreateTables
+  modules.suppliersDAA.createTables()
 
   val swaggerService = new SwaggerHttpService {
     override def apiTypes = Seq(typeOf[SupplierHttpService])
@@ -76,7 +75,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   def SupplierGetRoute = path("supplier" / IntNumber) { (supId)      =>
     get {
       respondWithMediaType(`application/json`) {
-        onComplete((modules.suppliersDAA ? GetSupplierById(supId)).mapTo[Future[Seq[Supplier]]]) {
+        onComplete((modules.suppliersDAA.getSupplierById(supId)).mapTo[Vector[Supplier]]) {
           case Success(photos) => complete(photos)
           case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
         }
@@ -93,7 +92,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   ))
   def SupplierPostRoute = path("supplier"){
     post {
-      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDAA ? Save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
+      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDAA.save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
         // ignoring the number of insertedEntities because in this case it should always be one, you might check this in other cases
         case Success(insertedEntities) => complete(StatusCodes.Created)
         case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")

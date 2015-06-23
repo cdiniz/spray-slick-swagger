@@ -15,7 +15,7 @@
     <logger name="slick.compiler" level="error" />
     <logger name="com.wordnik" level="error" />
     <logger name="com.gettyimages" level="error" />
-    <root level="debug">
+    <root level="error">
         <appender-ref ref="CONSOLE"/>
     </root>
 

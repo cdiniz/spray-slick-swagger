@@ -14,7 +14,7 @@
 
     <ul><li>    Spray-json to parse json    </li>
         <li>    Swagger to document routes and json    </li>
-        <li>    Data access layer composed by data access Akka actors.    </li>
+        <li>    (Removed in v0.0.2) Data access layer composed by data access Akka actors.    </li>
         <li>    Models as case classes and slick models, independent from database driver and profile (Go slick3)    </li>
         <li>   Multiple database types configured in properties file (h2 and postgresql for instance)    </li>
         <li>   Cake pattern for DI    </li>
@@ -62,13 +62,16 @@
       def * = (id.?, name, desc) <> (Supplier.tupled, Supplier.unapply)
     }</code></pre>
 
-    <p>Data Access layer as actors instead of the usual dal classes. Class SuppliersDAA.scala (DAA stands for Data Access Actor) represents the actor for suppliers data operation.
+    <p>(Removed in v0.0.2) Data Access layer as actors instead of the usual dal classes. Class SuppliersDAA.scala (DAA stands for Data Access Actor) represents the actor for suppliers data operation.
        The operations are represented in actor messages. For instance, for get a supplier by id, the actor has this case in the receive method:</p>
 
     <pre><code>
         case GetSupplierById(id) ⇒ sender ! db.run(suppliers.filter(_.id === id).result)
     </code></pre>
 
+    <p>(v0.0.2) Data Access layer as the usual dal classes. Class SuppliersDal.scala </p>
+
+    
     <p>The model definition is database independent. The database type is declared in application.conf, for each database. For instance, we use an h2 database in this example with the follow configuration:</p>
     <pre><code>
         h2db {

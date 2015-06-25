@@ -6,7 +6,7 @@ It supports the following features:
 
 * Spray-json to parse json
 * Swagger to document routes and json
-* Data access layer composed by data access Akka actors.
+* (Removed in v 0.0.2) Data access layer composed by data access Akka actors.
 * Models as case classes and slick models, independent from database driver and profile (Go slick3)
 * Multiple database types configured in properties file (h2 and postgresql for instance)
 * Cake pattern for DI

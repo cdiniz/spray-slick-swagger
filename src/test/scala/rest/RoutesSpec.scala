@@ -1,7 +1,6 @@
 package rest
 
 import entities.JsonProtocol
-import persistence.dal.SuppliersDAA.{Save, GetSupplierById}
 import persistence.entities.{SimpleSupplier, Supplier}
 import spray.httpx.SprayJsonSupport
 import spray.http._
@@ -24,10 +23,8 @@ class RoutesSpec  extends AbstractRestTest {
   "Supplier Routes" should {
 
     "return an empty array of suppliers" in {
-      addProbeBehaviour(suppliersActor) {
-        case (sender,  GetSupplierById(1)) =>
-          sender.tell(Future(Seq()), suppliersActor.ref)
-      }
+     modules.suppliersDal.getSupplierById(1) returns Future(Vector())
+
       Get("/supplier/1") ~> suppliers.SupplierGetRoute ~> check {
         handled must beTrue
         status mustEqual OK
@@ -36,10 +33,7 @@ class RoutesSpec  extends AbstractRestTest {
     }
 
     "return an array with 2 suppliers" in {
-      addProbeBehaviour(suppliersActor) {
-        case (sender,  GetSupplierById(1)) =>
-          sender.tell(Future(Seq(Supplier(Some(1),"name 1", "desc 1"),Supplier(Some(2),"name 2", "desc 2"))), suppliersActor.ref)
-      }
+      modules.suppliersDal.getSupplierById(1) returns Future(Vector(Supplier(Some(1),"name 1", "desc 1"),Supplier(Some(2),"name 2", "desc 2")))
       Get("/supplier/1") ~> suppliers.SupplierGetRoute ~> check {
         handled must beTrue
         status mustEqual OK
@@ -48,10 +42,7 @@ class RoutesSpec  extends AbstractRestTest {
     }
 
     "create a supplier with the json in post" in {
-      addProbeBehaviour(suppliersActor) {
-        case (sender,  Save(Supplier(None,"name 1","desc 1"))) =>
-          sender.tell(Future(1), suppliersActor.ref)
-      }
+      modules.suppliersDal.save(Supplier(None,"name 1","desc 1")) returns  Future(1)
       Post("/supplier",SimpleSupplier("name 1","desc 1")) ~> suppliers.SupplierPostRoute ~> check {
         handled must beTrue
         status mustEqual Created

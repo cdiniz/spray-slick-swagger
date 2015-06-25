@@ -30,7 +30,7 @@ class RoutesActor(modules: Configuration with PersistenceModule) extends Actor w
   implicit val timeout = Timeout(5.seconds)
 
   // create table for suppliers if the table didn't exist (should be removed, when the database wasn't h2)
-  modules.suppliersDAA.createTables()
+  modules.suppliersDal.createTables()
 
   val swaggerService = new SwaggerHttpService {
     override def apiTypes = Seq(typeOf[SupplierHttpService])
@@ -75,7 +75,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   def SupplierGetRoute = path("supplier" / IntNumber) { (supId)      =>
     get {
       respondWithMediaType(`application/json`) {
-        onComplete((modules.suppliersDAA.getSupplierById(supId)).mapTo[Vector[Supplier]]) {
+        onComplete((modules.suppliersDal.getSupplierById(supId)).mapTo[Vector[Supplier]]) {
           case Success(photos) => complete(photos)
           case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
         }
@@ -92,7 +92,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   ))
   def SupplierPostRoute = path("supplier"){
     post {
-      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDAA.save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
+      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDal.save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
         // ignoring the number of insertedEntities because in this case it should always be one, you might check this in other cases
         case Success(insertedEntities) => complete(StatusCodes.Created)
         case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
@@ -101,4 +101,3 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
     }
   }
 }
-

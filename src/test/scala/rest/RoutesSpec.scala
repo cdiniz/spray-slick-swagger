@@ -33,7 +33,7 @@ class RoutesSpec  extends AbstractRestTest {
     }
 
     "return an array with 2 suppliers" in {
-      modules.suppliersDal.getSupplierById(1) returns Future(Vector(Supplier(Some(1),"name 1", "desc 1"),Supplier(Some(2),"name 2", "desc 2")))
+      modules.suppliersDal.getSupplierById(1) returns Future(Vector(Supplier(1,"name 1", "desc 1"),Supplier(2,"name 2", "desc 2")))
       Get("/supplier/1") ~> suppliers.SupplierGetRoute ~> check {
         handled must beTrue
         status mustEqual OK
@@ -42,7 +42,7 @@ class RoutesSpec  extends AbstractRestTest {
     }
 
     "create a supplier with the json in post" in {
-      modules.suppliersDal.save(Supplier(None,"name 1","desc 1")) returns  Future(1)
+      modules.suppliersDal.save(Supplier(0,"name 1","desc 1")) returns  Future(1)
       Post("/supplier",SimpleSupplier("name 1","desc 1")) ~> suppliers.SupplierPostRoute ~> check {
         handled must beTrue
         status mustEqual Created

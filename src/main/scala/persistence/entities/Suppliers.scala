@@ -1,22 +1,14 @@
 package persistence.entities
 
-import utils.Profile
+import persistence.dal.{BaseEntity, BaseTable}
+import slick.driver.H2Driver.api._
 
-
-case class Supplier(id: Option[Int],name: String,desc: String)
+case class Supplier(id: Long,name: String,desc: String) extends BaseEntity
 
 case class SimpleSupplier(name: String,desc: String)
 
-
-trait Suppliers extends Profile{
-  import profile.api._
-
-  class Suppliers(tag: Tag) extends Table[Supplier](tag, "SUPPLIERS") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("userID")
-    def desc = column[String]("last_name")
-    def * = (id.?, name, desc) <> (Supplier.tupled, Supplier.unapply)
-  }
-  val suppliers = TableQuery[Suppliers]
-
+class SuppliersTable(tag: Tag) extends BaseTable[Supplier](tag, "SUPPLIERS") {
+  def name = column[String]("userID")
+  def desc = column[String]("last_name")
+  def * = (id, name, desc) <> (Supplier.tupled, Supplier.unapply)
 }

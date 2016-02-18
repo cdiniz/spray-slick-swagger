@@ -92,7 +92,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   ))
   def SupplierPostRoute = path("supplier"){
     post {
-      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDal.save(Supplier(None,supplierToInsert.name,supplierToInsert.desc)))) {
+      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDal.save(Supplier(0,supplierToInsert.name,supplierToInsert.desc)))) {
         // ignoring the number of insertedEntities because in this case it should always be one, you might check this in other cases
         case Success(insertedEntities) => complete(StatusCodes.Created)
         case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")

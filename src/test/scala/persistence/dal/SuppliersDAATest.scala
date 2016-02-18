@@ -20,7 +20,7 @@ class SuppliersDalTest extends FunSuite with AbstractPersistenceTest with Before
 
   test("SuppliersActor: Testing Suppliers Actor") {
     Await.result(modules.suppliersDal.createTables(),5.seconds)
-    val numberOfEntities : Int = Await.result((modules.suppliersDal.save(Supplier(None,"sup","desc"))),5.seconds)
+    val numberOfEntities : Long = Await.result((modules.suppliersDal.save(Supplier(0,"sup","desc"))),5.seconds)
     assert (numberOfEntities == 1)
     val supplier : Seq[Supplier] = Await.result((modules.suppliersDal.getSupplierById(1)),5.seconds)
     assert (supplier.length == 1 &&  supplier.head.name.compareTo("sup") == 0)

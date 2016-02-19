@@ -75,12 +75,16 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   def SupplierGetRoute = path("supplier" / IntNumber) { (supId)      =>
     get {
       respondWithMediaType(`application/json`) {
-        onComplete((modules.suppliersDal.getSupplierById(supId)).mapTo[Vector[Supplier]]) {
-          case Success(photos) => complete(photos)
+        onComplete((modules.suppliersDal.getSupplierById(supId)).mapTo[Option[Supplier]]) {
+          case Success(supplierOpt) => supplierOpt match {
+            case Some(sup) => complete(sup)
+            case None => complete(NotFound,s"The supplier doesn't exist")
+          }
           case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
         }
       }
-    }}
+    }
+  }
 
   @ApiOperation(value = "Add Supplier", nickname = "addSuplier", httpMethod = "POST", consumes = "application/json", produces = "text/plain; charset=UTF-8")
   @ApiImplicitParams(Array(

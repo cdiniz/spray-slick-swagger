@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 trait SuppliersDal {
   def save(sup: Supplier) : Future[Long]
-  def getSupplierById(id: Int) : Future[Vector[Supplier]]
+  def getSupplierById(id: Int) : Future[Option[Supplier]]
   def createTables() : Future[Unit]
 }
 
@@ -24,12 +24,7 @@ class SuppliersDalImpl(implicit val db: JdbcProfile#Backend#Database,implicit va
 
   override def save(sup: Supplier) : Future[Long] = insert(sup)
 
-  override def getSupplierById(id: Int) : Future[Vector[Supplier]] = findById(id) map {
-    x => x match {
-      case Some(sup) => Vector(sup)
-      case None =>  Vector()
-    }
-  }
+  override def getSupplierById(id: Int) : Future[Option[Supplier]] = findById(id) 
 
   override def createTables() : Future[Unit] = {
       db.run(DBIO.seq(tableQ.schema.create))

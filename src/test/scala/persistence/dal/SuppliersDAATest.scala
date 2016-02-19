@@ -22,10 +22,10 @@ class SuppliersDalTest extends FunSuite with AbstractPersistenceTest with Before
     Await.result(modules.suppliersDal.createTables(),5.seconds)
     val numberOfEntities : Long = Await.result((modules.suppliersDal.save(Supplier(0,"sup","desc"))),5.seconds)
     assert (numberOfEntities == 1)
-    val supplier : Seq[Supplier] = Await.result((modules.suppliersDal.getSupplierById(1)),5.seconds)
-    assert (supplier.length == 1 &&  supplier.head.name.compareTo("sup") == 0)
-    val empty : Seq[Supplier] = Await.result((modules.suppliersDal.getSupplierById(2)),5.seconds)
-    assert (empty.length == 0)
+    val supplier : Option[Supplier] = Await.result((modules.suppliersDal.getSupplierById(1)),5.seconds)
+    assert (! supplier.isEmpty &&  supplier.get.name.compareTo("sup") == 0)
+    val empty : Option[Supplier] = Await.result((modules.suppliersDal.getSupplierById(2)),5.seconds)
+    assert (empty.isEmpty)
   }
 
   override def afterAll: Unit ={

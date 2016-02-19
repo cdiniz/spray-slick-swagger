@@ -23,21 +23,20 @@ class RoutesSpec  extends AbstractRestTest {
   "Supplier Routes" should {
 
     "return an empty array of suppliers" in {
-     modules.suppliersDal.getSupplierById(1) returns Future(Vector())
+     modules.suppliersDal.getSupplierById(1) returns Future(None)
 
       Get("/supplier/1") ~> suppliers.SupplierGetRoute ~> check {
         handled must beTrue
-        status mustEqual OK
-        responseAs[Seq[Supplier]].length == 0
+        status mustEqual NotFound
       }
     }
 
     "return an array with 2 suppliers" in {
-      modules.suppliersDal.getSupplierById(1) returns Future(Vector(Supplier(1,"name 1", "desc 1"),Supplier(2,"name 2", "desc 2")))
+      modules.suppliersDal.getSupplierById(1) returns Future(Some(Supplier(1,"name 1", "desc 1")))
       Get("/supplier/1") ~> suppliers.SupplierGetRoute ~> check {
         handled must beTrue
         status mustEqual OK
-        responseAs[Seq[Supplier]].length == 2
+        responseAs[Option[Supplier]].isEmpty mustEqual(false)
       }
     }
 

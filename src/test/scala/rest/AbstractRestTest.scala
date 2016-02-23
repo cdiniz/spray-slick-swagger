@@ -1,7 +1,8 @@
 package rest
 
 import akka.testkit.TestProbe
-import persistence.dal.SuppliersDal
+import persistence.dal.BaseDal
+import persistence.entities.{Supplier, SuppliersTable}
 import utils.{PersistenceModule, ConfigurationModuleImpl, ActorModule}
 import akka.actor.ActorRef
 import com.typesafe.config.Config
@@ -16,7 +17,7 @@ trait AbstractRestTest extends Specification with Specs2RouteTest with Mockito{
   trait Modules extends ConfigurationModuleImpl with ActorModule with PersistenceModule {
     val system = AbstractRestTest.this.system
 
-    override val suppliersDal = mock[SuppliersDal]
+    override val suppliersDal = mock[BaseDal[SuppliersTable,Supplier]]
 
     override def config = getConfig.withFallback(super.config)
   }

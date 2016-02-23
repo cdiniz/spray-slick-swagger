@@ -1,6 +1,5 @@
 package persistence.entities
 
-import persistence.dal.{BaseEntity, BaseTable}
 import slick.driver.H2Driver.api._
 
 case class Supplier(id: Long,name: String,desc: String) extends BaseEntity

@@ -4,7 +4,6 @@ import akka.actor.{ Actor}
 import com.wordnik.swagger.annotations._
 import entities.JsonProtocol
 import persistence.entities._
-import scala.concurrent.Future
 import com.typesafe.scalalogging.LazyLogging
 import spray.httpx.SprayJsonSupport
 import spray.routing._
@@ -14,7 +13,6 @@ import utils.{PersistenceModule, Configuration}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 import spray.http.StatusCodes._
-import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 import com.gettyimages.spray.swagger._
@@ -30,7 +28,7 @@ class RoutesActor(modules: Configuration with PersistenceModule) extends Actor w
   implicit val timeout = Timeout(5.seconds)
 
   // create table for suppliers if the table didn't exist (should be removed, when the database wasn't h2)
-  modules.suppliersDal.createTables()
+  modules.suppliersDal.createTable()
 
   val swaggerService = new SwaggerHttpService {
     override def apiTypes = Seq(typeOf[SupplierHttpService])
@@ -75,7 +73,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   def SupplierGetRoute = path("supplier" / IntNumber) { (supId)      =>
     get {
       respondWithMediaType(`application/json`) {
-        onComplete((modules.suppliersDal.getSupplierById(supId)).mapTo[Option[Supplier]]) {
+        onComplete((modules.suppliersDal.findById(supId)).mapTo[Option[Supplier]]) {
           case Success(supplierOpt) => supplierOpt match {
             case Some(sup) => complete(sup)
             case None => complete(NotFound,s"The supplier doesn't exist")
@@ -96,7 +94,7 @@ abstract class SupplierHttpService(modules: Configuration with PersistenceModule
   ))
   def SupplierPostRoute = path("supplier"){
     post {
-      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDal.save(Supplier(0,supplierToInsert.name,supplierToInsert.desc)))) {
+      entity(as[SimpleSupplier]){ supplierToInsert =>  onComplete((modules.suppliersDal.insert(Supplier(0,supplierToInsert.name,supplierToInsert.desc)))) {
         // ignoring the number of insertedEntities because in this case it should always be one, you might check this in other cases
         case Success(insertedEntities) => complete(StatusCodes.Created)
         case Failure(ex) => complete(InternalServerError, s"An error occurred: ${ex.getMessage}")
